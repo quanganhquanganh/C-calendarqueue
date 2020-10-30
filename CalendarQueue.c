@@ -104,7 +104,6 @@ double newwidth(CalendarQueue* q) {
     }
     double final_seperation = sum / m;
     free(samplesprio);
-    printf("Is this it? \n");
     return(3.0 * final_seperation);
 }
 
