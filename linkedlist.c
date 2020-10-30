@@ -29,7 +29,7 @@ void display(List * list, int length) {
   }
 }
 
-int compare_node(node *n1, node *n2) {
+int compare_nodes(node *n1, node *n2) {
 	return (n1->priority > n2->priority);
 }
 
@@ -43,7 +43,7 @@ void add(node* entry, List * list) {
 	else {
 		previous = NULL;
 		current = *list;
-		while (current && compare_node(entry,current) > 0) {
+		while (current && compare_nodes(entry,current) > 0) {
 			previous = current;
 			current = current->next;
 		}
