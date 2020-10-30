@@ -23,7 +23,6 @@ int mask_modulo(int m, int n) { return m & (n - 1);}
 
 void localinit(CalendarQueue* q, int qbase, int nbuck,
                         double bwidth, double startprio) {
-    //CalendarQueue* q = (CalendarQueue*)malloc(sizeof(CalendarQueue));
     int i = 0;
     long int n = 0;
     /* Set position and size of new queue. */
