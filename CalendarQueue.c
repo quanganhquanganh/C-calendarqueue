@@ -184,7 +184,7 @@ it. */
     double lowestprio = q->bucket[0]->priority;
     int lowestbucket = 0;
     for(int i = 0; i < q->nbuckets; ++i) {
-        if(q->bucket[i]->priority < lowestprio) {
+        if(q->bucket[i] != NULL && q->bucket[i]->priority < lowestprio) {
             lowestbucket = i;
             lowestprio = q->bucket[i]->priority;
         }
@@ -203,7 +203,7 @@ void display_queue(CalendarQueue* q) {
     printf("Queue's size: %d; Top threshold: %d; Bottom threshold: %d;", q->qsize,
     q->top_threshold, q->bot_threshold);
     for(int i = 0; i < q->nbuckets; ++i) {
-        printf("\n|\nv\n");
+        printf("\n  |\n  v\n");
         printf("Bucket [%d]: ", i);
         display(&(q->bucket[i]), 15);
     }
