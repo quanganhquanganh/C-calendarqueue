@@ -27,7 +27,7 @@ void localinit(CalendarQueue* q, int qbase, int nbuck,
     long int n = 0;
     /* Set position and size of new queue. */
     q->firstsub = qbase;
-    q->bucket = &A[qbase];
+    q->bucket = &POOL[qbase];
     q->width = bwidth;
     q->nbuckets = nbuck;
     //Calculate bit mask for modulo nbuckets operation; ???
@@ -36,7 +36,7 @@ void localinit(CalendarQueue* q, int qbase, int nbuck,
     for(i = 0; i < q->nbuckets; ++i) q->bucket[i] = NULL;
     /* Set up initial position in queue. */
     q->lastprio = startprio;
-    n = startprio/ q->width; 
+    n = (long int)startprio/ q->width; 
     /* Virtual bucket */
     q->lastbucket = mask_modulo(n, q->nbuckets);
     q->buckettop = (n + 1) * q->width + 0.5 * q->width;
@@ -73,12 +73,12 @@ double newwidth(CalendarQueue* q) {
     for(int i = 0; i < nsamples; ++i) {
         node* n = dequeue(q);
         add(n, dqsamples);
-        samplesprio[i] = n->priority;
+        samplesprio[i] = n->endTime;
     }
 
     for(int i = 0; i < nsamples; ++i) {
         node* n = delete(*dqsamples, dqsamples);
-        enqueue(n, n->priority, q);
+        enqueue(n, n->endTime, q);
     }
     destroy(dqsamples);
 
@@ -101,7 +101,7 @@ double newwidth(CalendarQueue* q) {
             ++m;
         }
     }
-    double final_seperation = sum / m;
+    double final_seperation = (sum == 0)? (1.0 / 3) : sum / m;
     free(samplesprio);
     return(3.0 * final_seperation);
 }
@@ -131,7 +131,7 @@ end of the array a[QSPACE] from the original. */
 		node* current = oldbucket[i];
 		while (current != NULL) {
 			node* next = current->next;
-			enqueue(current, current->priority, q);
+			enqueue(current, current->endTime, q);
 			current = next;
 		}
 		//Transfer elements from bucket i to new calendar
@@ -145,7 +145,7 @@ void enqueue(node* entry, double priority, CalendarQueue* q)
     int i;
     /* Calculate the number of the bucket in which to
     place the new entry. */
-    i = priority/ q->width; /* Find virtual bucket.*/
+    i = (long int)priority/ q->width; /* Find virtual bucket.*/
     i = i % q->nbuckets; /* Find actual bucket. */
     add(entry, &(q->bucket[i])); /*Insert entry into bucket i in sorted list. */
     ++(q->qsize); /* Update record of queue size. */
@@ -163,11 +163,11 @@ it. */
     for (i = q->lastbucket; ; ) /* Search buckets */
     {
         /* Check bucket i */
-        if (q->bucket[i] != NULL && q->bucket[i]->priority < q->buckettop)
+        if (q->bucket[i] != NULL && q->bucket[i]->endTime < q->buckettop)
         {   /* Item to dequeue has been found. */
             node* dequeue_i = delete(q->bucket[i], &(q->bucket[i]));
             /* Update position on calendar. */
-            q->lastbucket = i; q->lastprio = dequeue_i->priority;
+            q->lastbucket = i; q->lastprio = dequeue_i->endTime;
             --(q->qsize);
             /* Halve calendar size if needed. */
             if (q->qsize < q->bot_threshold) resize(q, q->nbuckets/2);
@@ -181,14 +181,21 @@ it. */
         }
     }
     /* Directly search for minimum priority event. */
-    double lowestprio = q->bucket[0]->priority;
+	int firstprio = TRUE;
+    int lowestprio = 0;
     int lowestbucket = 0;
     for(int i = 0; i < q->nbuckets; ++i) {
-        if(q->bucket[i] != NULL && q->bucket[i]->priority < lowestprio) {
-            lowestbucket = i;
-            lowestprio = q->bucket[i]->priority;
-        }
-    }
+		if (q->bucket[i] == NULL) continue;
+		if(firstprio) {
+			lowestbucket = i;
+			lowestprio = q->bucket[i]->endTime;
+			firstprio = FALSE;
+		}
+		if (q->bucket[i]->endTime < lowestprio) {
+			lowestbucket = i;
+			lowestprio = q->bucket[i]->endTime;
+		}
+	}
     q->lastbucket = lowestbucket;
     q->lastprio = lowestprio;
     int vbucket = (int)(lowestprio / (q->width));
