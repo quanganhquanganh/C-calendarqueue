@@ -7,7 +7,7 @@ node* new_node(double priority) {
   if (!n) {
     return NULL;
   }
-  n->priority = priority;
+  n->endTime = priority;
   n->next = NULL;
   return n;
 }

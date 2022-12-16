@@ -7,8 +7,6 @@
 
 typedef struct calendar_queue CalendarQueue;
 
-List A[QSPACE];
-
 CalendarQueue* initqueue();
 void enqueue(struct node* entry, double priority, CalendarQueue* queue);
 struct node* dequeue(CalendarQueue* queue);

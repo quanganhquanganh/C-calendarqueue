@@ -17,7 +17,7 @@ void display(List * list, int length) {
     return;
   int i = 1;
   for(; current != NULL; current = current->next) {
-    printf("%.2lf", current->priority);
+    printf("%.2lf", current->endTime);
     if(i >= length) {
       printf("\n->");
       i = 1;
@@ -30,7 +30,7 @@ void display(List * list, int length) {
 }
 
 int compare_nodes(node *n1, node *n2) {
-	return (n1->priority > n2->priority);
+	return (n1->endTime > n2->endTime);
 }
 
 void add(node* entry, List * list) {
