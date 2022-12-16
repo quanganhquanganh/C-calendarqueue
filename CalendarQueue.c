@@ -3,6 +3,8 @@
 #include "stdlib.h"
 #include "Node.h"
 
+List POOL[QSPACE];
+
 enum BOOLEAN{FALSE, TRUE};
 
 struct calendar_queue {

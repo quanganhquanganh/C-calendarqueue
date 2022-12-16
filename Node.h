@@ -2,7 +2,7 @@
 #define NODE_HEADER
 
 typedef struct node {
-    double priority;
+    double endTime;
     struct node * next;
 } node;
 
